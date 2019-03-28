@@ -1,24 +1,20 @@
 package com.example.simplerestapis.models;
 
 public class PostResponse {
-	int id;
+	String topic;
 	String message;
-	String extra;
-	public String getExtra() {
-		return extra;
+	public String getTopic() {
+		return topic;
 	}
-	public int getId() {
-		return id;
-	}
+
 	public String getMessage() {
 		return message;
 	}
-	public void setExtra(String extra) {
-		this.extra = extra;
+
+	public void setTopic(String topic) {
+		this.topic = topic;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}

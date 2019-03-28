@@ -1,9 +1,6 @@
 package com.example.simplerestapis.controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.simplerestapis.models.GetResponce;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.simplerestapis.models.PostRequest;
 import com.example.simplerestapis.models.PostResponse;
@@ -21,13 +18,21 @@ public class WebController {
 		return response;
 
 	}
-	
+	@CrossOrigin(origins = "http://localhost:4200")
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public PostResponse Test(@RequestBody PostRequest inputPayload) {
 		PostResponse response = new PostResponse();
-		response.setId(inputPayload.getId()*100);
-		response.setMessage("Hello " + inputPayload.getName());
-		response.setExtra("Some text");
+		response.setMessage("server received message: " + inputPayload.getMessage());
+		response.setTopic("server received topic: " + inputPayload.getTopic());
+		return response;
+	}
+
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public GetResponce Get(@RequestBody GetResponce inputPayload) {
+		GetResponce response = new GetResponce();
+		response.setMessage(inputPayload.getMessage());
+		response.setTopic(inputPayload.getTopic());
+
 		return response;
 	}
 }
