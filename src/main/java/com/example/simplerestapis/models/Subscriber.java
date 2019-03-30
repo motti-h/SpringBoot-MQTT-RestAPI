@@ -16,36 +16,36 @@ public class Subscriber implements MqttCallback {
     private Integer id;                         //class instance id
     public static MyBlob myBlob;                //class myBlob containment for blob communication
     private static boolean compile = false;
-    public Subscriber(String uri ,String blobname,String containername) throws MqttException, URISyntaxException {
+    /*-----------------------------------------------------------------------------------------------------------*/
+    //uri is for the mqtt broker directive
+    public Subscriber(String brokerUri ,String blobname,String containername) throws MqttException, URISyntaxException {
 
-        this(new URI(uri));
+        this(new URI(brokerUri));
         if (compile) {
             myBlob = new MyBlob(blobname, containername);
             myBlob.init();
         }
     }
-    public Subscriber(String uri ) throws MqttException, URISyntaxException {
+    public Subscriber(String brokerUri ) throws MqttException, URISyntaxException {
 
-            this(new URI(uri));
+            this(new URI(brokerUri));
         }
 
-
-
-    public Subscriber(URI uri) throws MqttException {
+    public Subscriber(URI brokerUri) throws MqttException,URISyntaxException {
 
         instancenum=instancenum+1;
         id=instancenum;
-        this.init(uri);
+        this.init(brokerUri);
     }
 
-    private void init(URI uri)throws MqttException
+    private void init(URI brokerUri)throws MqttException
     {
-        String host = String.format("tcp://%s:%d", uri.getHost(), uri.getPort());
+        String host = String.format("tcp://%s:%d", brokerUri.getHost(), brokerUri.getPort());
         String username = "mottih";
         String password = "mottiadmin";
-        String clientId = "MQTT-Java-Example" + instancenum ;
-        if (!uri.getPath().isEmpty()) {
-            this.topic = uri.getPath().substring(1);
+        String clientId = "MQTT-client" + instancenum ;
+        if (!brokerUri.getPath().isEmpty()) {
+            this.topic = brokerUri.getPath().substring(1);
         }
 
         MqttConnectOptions conOpt = new MqttConnectOptions();
@@ -67,10 +67,10 @@ public class Subscriber implements MqttCallback {
         return first[0].split(":");
     }
 
-    public void sendMessage(String payload) throws MqttException {
+    public void sendMessage(String topic, String payload) throws MqttException {
         MqttMessage message = new MqttMessage(payload.getBytes());
         message.setQos(qos);
-        this.client.publish(this.topic, message); // Blocking publish
+        this.client.publish(topic, message); // Blocking publish
     }
 
     /**
@@ -103,6 +103,8 @@ public class Subscriber implements MqttCallback {
 
     }
 
-
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 }
 
