@@ -6,7 +6,7 @@ import java.io.File;
 public class WebController {
 	String brokerUri="tcp://10.0.0.162:1883";
 	Subscriber subscriber;
-	String mosquittoExecutable = "C:\\Program Files\\mosquitto\\mosquitto.exe";
+	String mosquittoExecutable = "C:\\Program Files\\mosquitto\\mosquitto.exe";//this should be mqtt mosquitto broker path
 	String mosquittoExecutableFilePath = "C:\\Program Files\\mosquitto";
 	public WebController()
 	{

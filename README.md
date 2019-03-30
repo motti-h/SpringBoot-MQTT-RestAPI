@@ -1,11 +1,8 @@
-# Simple REST APIS with Springboot
+# REST APIS with Springboot
 
-This code is part of a blog post.
-
-The link to the blog post is given here.
-[https://adityasridhar.com/posts/how-to-create-simple-rest-apis-with-springboot](https://adityasridhar.com/posts/how-to-create-simple-rest-apis-with-springboot)
-
-Read the blog post to make the best use of this repo :)
+this code is my rest API for a simple mqtt IoT project
+it serve a an mqtt broker that manage mqqt messages between clients 
+it can also transfer messages from my angular mqtt messenger app
 
 ## Pre-requisite
 
@@ -13,15 +10,9 @@ Ensure you have maven installed in your system. You can install it from [https:/
 
 Also ensure maven path is set in you System so that you can run `mvn` commands
 
-## Cloning the code to your local
+to work with this project you must have mosquitto mqtt broker installed and set
+the path to it in the WebController class.
 
-Clone this code to your local using the following command
-
-```bash
-git clone https://github.com/aditya-sridhar/simple-rest-apis.git
-```
-
-Or you can import the project into an IDE of your choice. I Used Eclipse to test this out
 
 ## Run the Application
 
