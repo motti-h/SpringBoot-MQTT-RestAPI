@@ -24,7 +24,7 @@ public class WebController {
 	public WebController()
 	{
 		try {
-				this.SetProperties();
+				this.LoadProperties();
 				Runtime.getRuntime().exec(mosquittoExecutable, null, new File(mosquittoExecutableFilePath));
 				subscriber = new Subscriber(brokerURI,blobFileName,containerName);
 			}
@@ -62,7 +62,7 @@ public class WebController {
 
 		return response;
 	}
-	void SetProperties()throws java.io.IOException
+	void LoadProperties()throws java.io.IOException
 	{
 
 		prop=new Properties();
