@@ -1,4 +1,4 @@
-package com.example.simplerestapis.models;
+package com.example.simplerestapis.MQTT;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.OperationContext;

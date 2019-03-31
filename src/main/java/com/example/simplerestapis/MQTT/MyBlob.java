@@ -1,5 +1,6 @@
-package com.example.simplerestapis.models;
+package com.example.simplerestapis.MQTT;
 
+import com.example.simplerestapis.controller.WebController;
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
@@ -8,9 +9,11 @@ import com.microsoft.azure.storage.blob.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Properties;
 
 public class MyBlob {
 
@@ -18,10 +21,11 @@ public class MyBlob {
     CloudStorageAccount storageAccount;
     CloudBlobClient blobClient;
     CloudBlobContainer container;
-    String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=javaiotdiag;AccountKey=mk/Yx1ve7RIi2jjrOPzAzcTZq14hhXY3EOtlllTSJQtlf6w3f5QqD8V1F9VHecMkWX4ePH5cVLDJVpDIsm8Aww==;EndpointSuffix=core.windows.net";
+    String storageConnectionString;
     String blobFileName;
     String containerName;
-    String filePath ="C:\\Users\\CodeValue\\source\\java\\this is my mqtt\\java-mqtt-example\\src\\main\\java\\com\\cloudmqtt\\example\\testFile1.txt";
+    String filePath;
+    boolean emulator=false;
     public MyBlob(String blobfilename,String containername)
     {
         blobFileName = blobfilename;
@@ -31,7 +35,7 @@ public class MyBlob {
     public void writeToFile(String wordToPrint,String path) {
         tempfile = new File(path);
 
-//Create the file
+        //Create the file
         try {
             if (tempfile.createNewFile()) {
                 System.out.println("File is created!");
@@ -39,7 +43,7 @@ public class MyBlob {
                 System.out.println("File already exists.");
             }
 
-//Write Content
+            //Write Content
             FileWriter writer = new FileWriter(tempfile);
             writer.write(wordToPrint);
             writer.close();
@@ -50,24 +54,39 @@ public class MyBlob {
 
     public void init()
     {
+        Properties prop=new Properties();
+        InputStream inputProp = WebController.class.getClassLoader().getResourceAsStream("azureBlob.properties");
         try {
-            storageAccount = CloudStorageAccount.parse(storageConnectionString);
+            prop.load(inputProp);
+            storageConnectionString=prop.getProperty("storageConnectionString");
+            filePath=prop.getProperty("filePath");
+            if(emulator)
+                {
+                    storageConnectionString=prop.getProperty("emulatorstorageConnectionString");
+                    storageAccount = CloudStorageAccount.parse(storageConnectionString);
+                }
+            else
+                {
+                    storageConnectionString=prop.getProperty("storageConnectionString");
+                    storageAccount = CloudStorageAccount.parse(storageConnectionString);
+                }
             blobClient = storageAccount.createCloudBlobClient();
             container = blobClient.getContainerReference(containerName);
             System.out.println("Creating container: " + container.getName());
             container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
+            //tempfile = this.createFile("AppendBlob.txt");
+            //CloudAppendBlob blob = container.getAppendBlobReference(tempfile.getName());
+            //blob.uploadFromFile(tempfile.getAbsolutePath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (StorageException e) {
             e.printStackTrace();
-        } catch (java.security.InvalidKeyException e) {
+        } catch (java.security.InvalidKeyException |java.io.IOException e) {
             e.printStackTrace();
         }
     }
 
     void writeStuffToBlob(String upLoadString) {
-
-
         try {
             CloudAppendBlob blob = container.getAppendBlobReference(blobFileName);
             OperationContext operationContext = new OperationContext();
@@ -81,9 +100,30 @@ public class MyBlob {
             //System.out.println("Uploading the sample file ");
             //blob.uploadFromFile(tempfile.getAbsolutePath());
 
-
         } catch (URISyntaxException | com.microsoft.azure.storage.StorageException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    File createFile(String fileName){
+        File t = new File(fileName);
+
+        //Create the file
+        try {
+            if (t.createNewFile()) {
+                System.out.println("File is created!");
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            //Write Content
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        finally {
+            return t;
+        }
+
     }
 }

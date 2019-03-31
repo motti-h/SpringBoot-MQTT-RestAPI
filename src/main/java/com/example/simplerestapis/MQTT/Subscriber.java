@@ -1,4 +1,4 @@
-package com.example.simplerestapis.models;
+package com.example.simplerestapis.MQTT;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -14,17 +14,16 @@ public class Subscriber implements MqttCallback {
     private MqttClient client;
     private static Integer instancenum = 0;     //class instance counter
     private Integer id;                         //class instance id
-    public static MyBlob myBlob;                //class myBlob containment for blob communication
-    private static boolean compile = false;
+    public MyBlob myBlob;                //class myBlob containment for blob communication
+    private static boolean compile = true;
     /*-----------------------------------------------------------------------------------------------------------*/
     //uri is for the mqtt broker directive
     public Subscriber(String brokerUri ,String blobname,String containername) throws MqttException, URISyntaxException {
 
         this(new URI(brokerUri));
-        if (compile) {
             myBlob = new MyBlob(blobname, containername);
             myBlob.init();
-        }
+
     }
     public Subscriber(String brokerUri ) throws MqttException, URISyntaxException {
 
