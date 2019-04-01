@@ -6,10 +6,7 @@ import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -92,9 +89,9 @@ public class MyBlob {
             OperationContext operationContext = new OperationContext();
             operationContext.setLoggingEnabled(true);
             Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
             //System.out.println( sdf.format(cal.getTime()) );
-            blob.appendText(upLoadString + " " + sdf.format(cal.getTime())+"\n");
+            blob.appendText(upLoadString + " " +sdf.format(cal.getTime())+System.lineSeparator());
             //blob.downloadToFile("C:\\Users\\CodeValue\\Desktop\\tst.txt");
             //Creating blob and uploading file to it
             //System.out.println("Uploading the sample file ");
@@ -103,6 +100,18 @@ public class MyBlob {
         } catch (URISyntaxException | com.microsoft.azure.storage.StorageException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String DownloadFromBlob()
+    {   OutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            CloudAppendBlob blob = container.getAppendBlobReference(blobFileName);
+            blob.download(outputStream);
+        }catch (URISyntaxException |com.microsoft.azure.storage.StorageException e)
+        {
+            e.printStackTrace();
+        }
+        return outputStream.toString();
     }
 
     File createFile(String fileName){
