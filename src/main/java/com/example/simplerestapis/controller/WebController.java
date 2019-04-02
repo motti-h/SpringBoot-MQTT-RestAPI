@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -67,8 +70,10 @@ public class WebController {
 		PostResponse response = new PostResponse();
 		response.setMessage("server received message: " + inputPayload.getMessage());
 		response.setTopic("server received topic: " + inputPayload.getTopic());
+		response.setDeviceId(inputPayload.getDeviceId());
+		String payload=inputPayload.getDeviceId() + " " + inputPayload.getMessage();
 		try {
-			subscriber.sendMessage(inputPayload.getTopic(), inputPayload.getMessage());
+			subscriber.sendMessage(inputPayload.getTopic(), payload);
 
 			}
 		catch (org.eclipse.paho.client.mqttv3.MqttException e)
@@ -82,6 +87,21 @@ public class WebController {
 	public String GetIotData() {
 	return subscriber.myBlob.DownloadFromBlob();
 
+	}
+	@RequestMapping(value = "/iotdatafilt/", method = RequestMethod.GET)
+	public String GetIotDataWithDate(@RequestParam(value = "date", defaultValue = "0") String date) {
+		String textdata = subscriber.myBlob.DownloadFromBlob();
+		String lines[] = textdata.split("\\r?\\n");
+		List<String> list = new ArrayList();
+		for(int i=0;i<lines.length;i++)
+		{
+			if(lines[i].indexOf(date)!=-1? true: false)
+			{
+				list.add(lines[i]);
+			}
+
+		}
+		return list.toString();
 	}
 
 	void LoadProperties()throws java.io.IOException

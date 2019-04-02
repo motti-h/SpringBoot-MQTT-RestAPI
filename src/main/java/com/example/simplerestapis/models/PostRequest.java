@@ -3,6 +3,7 @@ package com.example.simplerestapis.models;
 public class PostRequest {
 	String topic;
 	String message;
+	String deviceId;
 	public String getTopic() {
 		return topic;
 	}
@@ -18,5 +19,16 @@ public class PostRequest {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
+	public String getDeviceId() 
+	{
+		return deviceId;
+	}
+	
+	public void setDeviceId(String deviceId) 
+	{
+		this.deviceId=deviceId;
+	}
+	
 
 }

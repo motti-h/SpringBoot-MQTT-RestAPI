@@ -88,10 +88,8 @@ public class MyBlob {
             CloudAppendBlob blob = container.getAppendBlobReference(blobFileName);
             OperationContext operationContext = new OperationContext();
             operationContext.setLoggingEnabled(true);
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
             //System.out.println( sdf.format(cal.getTime()) );
-            blob.appendText(upLoadString + " " +sdf.format(cal.getTime())+System.lineSeparator());
+            blob.appendText(upLoadString +System.lineSeparator());
             //blob.downloadToFile("C:\\Users\\CodeValue\\Desktop\\tst.txt");
             //Creating blob and uploading file to it
             //System.out.println("Uploading the sample file ");

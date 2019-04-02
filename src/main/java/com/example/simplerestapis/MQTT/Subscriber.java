@@ -5,6 +5,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 //mqtt subscriber class holds the ability to write to azure blob
 public class Subscriber implements MqttCallback {
@@ -71,7 +73,13 @@ public class Subscriber implements MqttCallback {
         message.setQos(qos);
         this.client.publish(topic, message); // Blocking publish
     }
-
+    
+    public void sendMessage(String topic, String payload,String deviceId) throws MqttException {
+        String str=payload+deviceId;
+    	MqttMessage message = new MqttMessage(str.getBytes());
+        message.setQos(qos);
+        this.client.publish(topic, message); // Blocking publish
+    }
     /**
      * @see MqttCallback#connectionLost(Throwable)
      */
@@ -96,9 +104,12 @@ public class Subscriber implements MqttCallback {
 
         System.out.println(String.format("[%s] %s", topic, msg));
         //System.out.println(String.format("[%s] %d", topic, ByteBuffer.wrap(barr).getInt()));
-        System.out.println(id);
+        //System.out.println(id);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//+ " " +sdf.format(cal.getTime())
+        msg = msg + " " +sdf.format(cal.getTime());
         if(compile)
-            myBlob.writeStuffToBlob(msg);
+            myBlob.writeStuffToBlob("topic:"+" "+ topic + " " + "message:" + " " + msg);
 
     }
 
