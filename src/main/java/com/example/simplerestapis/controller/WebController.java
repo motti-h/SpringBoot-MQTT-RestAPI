@@ -28,41 +28,10 @@ import java.util.Properties;
 @RestController
 public class WebController {
 
-	//this.LoadProperties();
+	
 
-
-
-	private String 			brokerURI;
-
-	private String 			mosquittoExecutable;
-
-	private String 			mosquittoExecutableFilePath;
-
-	private String			blobFileName;
-
-	private String			containerName;
-	Subscriber 				subscriber;
-	Properties 				prop;
-	InputStream 			inputProp = null;
-
-
-	public WebController()
-	{
-		try {
-			//Runtime.getRuntime().exec(configProperties.getMosquittoExecutable(), null, new File(configProperties.getMosquittoExecutableFilePath()));
-			//subscriber = new Subscriber(configProperties.getBrokerURI(),configProperties.getBlobFileName(),configProperties.getContainerName());
-				this.LoadProperties();
-				Runtime.getRuntime().exec(mosquittoExecutable, null, new File(mosquittoExecutableFilePath));
-				subscriber = new Subscriber(brokerURI,blobFileName,containerName);
-			}
-		catch (org.eclipse.paho.client.mqttv3.MqttException | java.net.URISyntaxException |java.io.IOException e)
-			{
-				e.printStackTrace();
-			}
-
-
-	}
-
+	@Autowired
+	private RestService restService;
 
 	@CrossOrigin(origins = "http://localhost:4200")																		//open up server for angular client
 	@RequestMapping(value = "/test", method = RequestMethod.POST)														//mapping /test
@@ -73,7 +42,7 @@ public class WebController {
 		response.setDeviceId(inputPayload.getDeviceId());
 		String payload=inputPayload.getDeviceId() + " " + inputPayload.getMessage();
 		try {
-			subscriber.sendMessage(inputPayload.getTopic(), payload);
+			restService.subscriber.sendMessage(inputPayload.getTopic(), payload);
 
 			}
 		catch (org.eclipse.paho.client.mqttv3.MqttException e)
@@ -84,88 +53,18 @@ public class WebController {
 	}
 
 	@RequestMapping(value = "/iotdata/{id}", method = RequestMethod.GET)
-	public String GetIotData(@PathVariable("id") String id) {	
-	String textdata = subscriber.myBlob.DownloadFromBlob();
-	String lines[] = textdata.split("\\r?\\n");
-	List<String> list = new ArrayList();
-	for(int i=0;i<lines.length;i++)
-	{
-		if(lines[i].indexOf(id)!=-1? true: false)
-		{
-			list.add(lines[i]);
-		}
-
+	public String GetIotData(@PathVariable("id") String id) 
+	{	
+		return restService.QuarryId(id);
 	}
-	return list.toString();
-}
 
 
 	@RequestMapping(value = "/iotdata/{id}/{date}", method = RequestMethod.GET)
-	public String GetIotDataWithDate(@PathVariable("id") String id,@PathVariable("date") String date) {
-		
-		String textdata = subscriber.myBlob.DownloadFromBlob();
-		String lines[] = textdata.split("\\r?\\n");
-		List<String> list = new ArrayList();
-		for(int i=0;i<lines.length;i++)
-		{
-			if(lines[i].contains(date)&&lines[i].contains(id))
-			{
-				list.add(lines[i]);
-			}
-		}
-
-			return list.toString();
-	}
-
-	void LoadProperties()throws java.io.IOException
+	public String GetIotDataWithDate(@PathVariable("id") String id,@PathVariable("date") String date) 
 	{
-
-		prop=new Properties();
-		inputProp = WebController.class.getClassLoader().getResourceAsStream("WebController.properties");
-		prop.load(inputProp);
-		brokerURI=prop.getProperty("brokerURI");
-		mosquittoExecutable=prop.getProperty("mosquittoExecutable");
-		mosquittoExecutableFilePath=prop.getProperty("mosquittoExecutableFilePath");
-		blobFileName=prop.getProperty("blobFileName");
-		containerName=prop.getProperty("containerName");
-
+		return restService.QuarryIdDate(id,date);
 	}
 
-	public void setBlobFileName(String blobFileName) {
-		this.blobFileName = blobFileName;
-	}
+	
 
-	public void setBrokerURI(String brokerURI) { this.brokerURI=brokerURI;}
-
-	public void setContainerName(String containerName) {
-		this.containerName = containerName;
-	}
-
-	public void setMosquittoExecutable(String mosquittoExecutable) {
-		this.mosquittoExecutable = mosquittoExecutable;
-	}
-
-	public void setMosquittoExecutableFilePath(String mosquittoExecutableFilePath) {
-		this.mosquittoExecutableFilePath = mosquittoExecutableFilePath;
-	}
-
-	public String getBlobFileName() {
-		return blobFileName;
-	}
-
-	public String getBrokerURI() {
-		return brokerURI;
-	}
-
-	public String getContainerName() {
-		return containerName;
-	}
-
-	public String getMosquittoExecutable() {
-		return mosquittoExecutable;
-	}
-
-	public String getMosquittoExecutableFilePath() {
-		return mosquittoExecutableFilePath;
-	}
 }
