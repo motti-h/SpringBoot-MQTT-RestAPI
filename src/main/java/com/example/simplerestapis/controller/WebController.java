@@ -41,9 +41,9 @@ public class WebController {
 	private String			blobFileName;
 
 	private String			containerName;
-	Subscriber 		subscriber;
-	Properties 		prop;
-	InputStream 	inputProp = null;
+	Subscriber 				subscriber;
+	Properties 				prop;
+	InputStream 			inputProp = null;
 
 
 	public WebController()
@@ -83,25 +83,38 @@ public class WebController {
 		return response;
 	}
 
-	@RequestMapping(value = "/iotdata/", method = RequestMethod.GET)
-	public String GetIotData() {
-	return subscriber.myBlob.DownloadFromBlob();
+	@RequestMapping(value = "/iotdata/{id}", method = RequestMethod.GET)
+	public String GetIotData(@PathVariable("id") String id) {	
+	String textdata = subscriber.myBlob.DownloadFromBlob();
+	String lines[] = textdata.split("\\r?\\n");
+	List<String> list = new ArrayList();
+	for(int i=0;i<lines.length;i++)
+	{
+		if(lines[i].indexOf(id)!=-1? true: false)
+		{
+			list.add(lines[i]);
+		}
 
 	}
-	@RequestMapping(value = "/iotdatafilt/", method = RequestMethod.GET)
-	public String GetIotDataWithDate(@RequestParam(value = "date", defaultValue = "0") String date) {
+	return list.toString();
+}
+
+
+	@RequestMapping(value = "/iotdata/{id}/{date}", method = RequestMethod.GET)
+	public String GetIotDataWithDate(@PathVariable("id") String id,@PathVariable("date") String date) {
+		
 		String textdata = subscriber.myBlob.DownloadFromBlob();
 		String lines[] = textdata.split("\\r?\\n");
 		List<String> list = new ArrayList();
 		for(int i=0;i<lines.length;i++)
 		{
-			if(lines[i].indexOf(date)!=-1? true: false)
+			if(lines[i].contains(date)&&lines[i].contains(id))
 			{
 				list.add(lines[i]);
 			}
-
 		}
-		return list.toString();
+
+			return list.toString();
 	}
 
 	void LoadProperties()throws java.io.IOException
