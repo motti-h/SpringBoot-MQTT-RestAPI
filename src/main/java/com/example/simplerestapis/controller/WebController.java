@@ -20,14 +20,14 @@ public class WebController {
 	@RequestMapping(value = "/iotdata/{id}", method = RequestMethod.GET)
 	public String GetIotData(@PathVariable("id") String id) 
 	{	
-		return restService.QuarryId(id);
+		return restService.queryId(id);
 	}
 
 
 	@RequestMapping(value = "/iotdata/{id}/{date}", method = RequestMethod.GET)
 	public String GetIotDataWithDate(@PathVariable("id") String id,@PathVariable("date") String date) 
 	{
-		return restService.QuarryIdDate(id,date);
+		return restService.queryIdDate(id,date);
 	}
 
 	

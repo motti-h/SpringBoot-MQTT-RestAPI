@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 //mqtt subscriber class holds the ability to write to azure blob
+// FIXME: Subscriber is a poor name for a class since it's not very descriptive - try right click on the name, rename, and rename to MqttSubscriber
+// Now it's clear what it should do and what it shouldn't do. Usually we want our classes to do one thing only (single responsibility principle).
+// So for example, having blob name and containername in constructor (not very useful for mqtt) should look suspicious to you
 public class Subscriber implements MqttCallback {
 
     private final int qos = 1;                  //mqtt "quality of service" massage
@@ -20,6 +23,7 @@ public class Subscriber implements MqttCallback {
     private static boolean compile = true;
     /*-----------------------------------------------------------------------------------------------------------*/
     //uri is for the mqtt broker directive
+    // FIXME: If you need blob access, pull all the configuration and logic to external persistence provider class and inject it via spring DI
     public Subscriber(String brokerUri ,String blobname,String containername) throws MqttException, URISyntaxException {
 
         this(new URI(brokerUri));
@@ -30,8 +34,10 @@ public class Subscriber implements MqttCallback {
     public Subscriber(String brokerUri ) throws MqttException, URISyntaxException {
 
             this(new URI(brokerUri));
-        }
+    }
 
+    // FIXME: If you do this kind of initialization in constructor, it will not play well with Spring DI - which is something we generally want.
+    // In Spring app, you would rarely need to call new
     public Subscriber(URI brokerUri) throws MqttException,URISyntaxException {
 
         instancenum=instancenum+1;
@@ -41,6 +47,7 @@ public class Subscriber implements MqttCallback {
 
     private void init(URI brokerUri)throws MqttException
     {
+        // FIXME: These belong to configuration in application.properties
         String host = String.format("tcp://%s:%d", brokerUri.getHost(), brokerUri.getPort());
         String username = "mottih";
         String password = "mottiadmin";

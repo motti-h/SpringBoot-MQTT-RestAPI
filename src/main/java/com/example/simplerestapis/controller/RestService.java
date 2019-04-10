@@ -16,33 +16,60 @@ public class RestService {
 	private String 			mosquittoExecutableFilePath;
 	private String			blobFileName;
 	private String			containerName;
+
+	// FIXME: Directly working with the subscriber class is problematic,
+	// since RestService will know about specifics of blob implementation in Azure,
+	// blob file format, etc...
+	// Separation of concerns is a much better practice, where you would pull all the data access logic to a separate class/service
+	// For example DeviceRepository service could be set up, that can use Subscriber to get data and expose clear API that can be used from
+	// REST controller
+	// Another benefit of using a separate class is that it can seamlessly implement caching, there's no point
+	// in reading the same file again and again if it doesn't change
 	public  Subscriber 		subscriber;
 	Properties 				prop;
 	InputStream 			inputProp = null;
-	
+
+
+
 			 
 	//@Autowired
     //private CounterService counterService;
 	public RestService() 
 	{
 		try {
+				// FIXME: LoadProperties includes hard-coded paths, and you don't use anything from application.properties here.
+			    // If you tried, but it didn't work - the reason is that constructor is not the correct location to do this.
+			    // Take a look at Spring component lifecycle documentation, and specifcally read about PostConstruct.
 				this.LoadProperties();
 				Runtime.getRuntime().exec(mosquittoExecutable, null, new File(mosquittoExecutableFilePath));
+
+				// FIXME: It's better to use Spring DI than manually creating instances of classes such as Subscriber
+				// Change the code to use Spring DI, wich the configuration supplied from application.properties
 				subscriber = new Subscriber(brokerURI,blobFileName,containerName);
 			}
 		catch (org.eclipse.paho.client.mqttv3.MqttException | java.net.URISyntaxException |java.io.IOException e)
 			{
+				//FIXME: If you get an exception in constructor of your main class, in most cases the application will not be very stable.
+				// In that case, it's best to print an error and quit, instead of printing a stack trace and staying alive.
+				// You should either throw the exception onwards, or actively abort execution
 				e.printStackTrace();
 			}
 	}
-	
-	public String QuarryId(String id) 
-	{	
+
+	// FIXME: In Java methods start with small letters (camelcase), it's just a convention - but for someone working with your code it's important
+	// take a look at java code conventions at https://www.oracle.com/technetwork/java/codeconventions-150003.pdf
+	public String queryId(String id)
+	{
+		// FIXME: File parsing logic doesn't belong here, see the comment on Subscriber above
 		String textdata = subscriber.myBlob.DownloadFromBlob();
 		String lines[] = textdata.split("\\r?\\n");
 		List<String> list = new ArrayList<String>();
+
+		// FIXME: For the logic below, for-each loop would result in a shorter and more readable code
 		for(int i=0;i<lines.length;i++)
 		{
+			//FIXME: indexOf(id) can have all kinds of odd behavior since it's not specifically looking where id is located, but at the whole line.
+			// It's best to have some structure to the data and only look at where you would expect the id to be
 			if(lines[i].indexOf(id)!=-1? true: false)
 			{
 				list.add(lines[i]);
@@ -52,7 +79,7 @@ public class RestService {
 		return list.toString();
 	}
 	
-	public String QuarryIdDate(String id,String date) 
+	public String queryIdDate(String id, String date)
 	{
 		String textdata = subscriber.myBlob.DownloadFromBlob();
 		String lines[] = textdata.split("\\r?\\n");
@@ -88,6 +115,9 @@ public class RestService {
 	
 	void LoadProperties()throws java.io.IOException
 	{
+		// FIXME: Reading external properties can easily fail if file isn't there or there is a syntax mistake.
+		// The best way to handle this is either report this issue as warning and supply defaults, or wrap with try/catch
+		// and provide a meaningful error.
 
 		prop=new Properties();
 		inputProp = WebController.class.getClassLoader().getResourceAsStream("WebController.properties");
