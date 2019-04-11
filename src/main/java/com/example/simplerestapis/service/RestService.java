@@ -20,7 +20,7 @@ public class RestService {
 
 	@Autowired
 	DeviceRepository deviceRepository;
-
+	// FIXED
 	// FIXME: Directly working with the subscriber class is problematic,
 	// since RestService will know about specifics of blob implementation in Azure,
 	// blob file format, etc...
@@ -35,20 +35,21 @@ public class RestService {
 	{
 		Runtime.getRuntime().exec(restServiceProp.getMosquittoExecutable(), null, new File(restServiceProp.getMosquittoExecutableFilePath()));
 		/*try {
+			// FIXED
 			// FIXME: LoadProperties includes hard-coded paths, and you don't use anything from application.properties here.
 		    // If you tried, but it didn't work - the reason is that constructor is not the correct location to do this.
 		    // Take a look at Spring component lifecycle documentation, and specifcally read about PostConstruct.
 			//this.loadProperties();
-			//FIXED:
 
+			//FIXED:
 			//Runtime.getRuntime().exec(restServiceProp.getMosquittoExecutable(), null, new File(restServiceProp.getMosquittoExecutableFilePath()));
 			// FIXME: It's better to use Spring DI than manually creating instances of classes such as Subscriber
 			// Change the code to use Spring DI, wich the configuration supplied from application.properties
 			//mqttsubscriber = new MqttSubscriber(brokerURI,blobFileName,containerName);
-			//FIXED:
+
 		}
 	catch (java.io.IOException e)
-		{
+		{	//FIXED:
 			//FIXME: If you get an exception in constructor of your main class, in most cases the application will not be very stable.
 			// In that case, it's best to print an error and quit, instead of printing a stack trace and staying alive.
 			// You should either throw the exception onwards, or actively abort execution
@@ -56,12 +57,12 @@ public class RestService {
 		}
 		*/
 	}
-	
-	
-	
+
+
+	//FIXED:
 	// FIXME: In Java methods start with small letters (camelcase), it's just a convention - but for someone working with your code it's important
 	// take a look at java code conventions at https://www.oracle.com/technetwork/java/codeconventions-150003.pdf
-	// FIXED: camelcase naming
+
 	public String queryId(String id)
 	{
 		return deviceRepository.quaryInfoById(id);

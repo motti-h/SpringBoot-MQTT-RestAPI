@@ -19,10 +19,11 @@ public class DeviceRepository {
         String lines[] = textdata.split("\\r?\\n");
         List<String> list = new ArrayList<String>();
 
-        // FIXME: For the logic below, for-each loop would result in a shorter and more readable code
         // FIXED: for-each
-        //FIXME: indexOf(id) can have all kinds of odd behavior since it's not specifically looking where id is located, but at the whole line.
+        // FIXME: For the logic below, for-each loop would result in a shorter and more readable code
         //FIXED:
+        //FIXME: indexOf(id) can have all kinds of odd behavior since it's not specifically looking where id is located, but at the whole line.
+
         for(String line:lines)
         {
             if(line.contains(id))

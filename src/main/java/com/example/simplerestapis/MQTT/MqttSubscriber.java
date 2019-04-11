@@ -10,11 +10,11 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
+// FIXED:
 // FIXME: Subscriber is a poor name for a class since it's not very descriptive - try right click on the name, rename, and rename to MqttSubscriber
 // Now it's clear what it should do and what it shouldn't do. Usually we want our classes to do one thing only (single responsibility principle).
 // So for example, having blob name and containername in constructor (not very useful for mqtt) should look suspicious to you
-// FIXED:
+
 
 @Component
 public class MqttSubscriber implements MqttCallback {
@@ -22,7 +22,7 @@ public class MqttSubscriber implements MqttCallback {
     private final int qos = 1;                  //mqtt "quality of service" massage
 
     private MqttClient client;
-    private static Integer instance = 0;     //class instance counter
+    private static Integer instance = 0;        //class instance counter
     private Integer id;                         //class instance id
     @Autowired
     private SubscriberProp subscriberProp;
@@ -36,8 +36,9 @@ public class MqttSubscriber implements MqttCallback {
         id= instance;
         String clientId = subscriberProp.getClientId() + instance;
         String host = subscriberProp.getBrokerUri().toString();
-        // FIXME: These belong to configuration in application.properties
         // FIXED:
+        // FIXME: These belong to configuration in application.properties
+
 
         if (!subscriberProp.getBrokerUri().getPath().isEmpty()) {
             subscriberProp.setTopic(subscriberProp.getBrokerUri().getPath().substring(1)) ;
