@@ -5,29 +5,30 @@ import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
 
+
+@Component
 public class MyBlob {
 
     public File tempfile = null;
     CloudStorageAccount storageAccount;
     CloudBlobClient blobClient;
     CloudBlobContainer container;
-    String storageConnectionString;
-    String blobFileName;
-    String containerName;
-    String filePath;
-    boolean emulator=false;
-    public MyBlob(String blobfilename,String containername)
-    {
-        blobFileName = blobfilename;
-        containerName = containername;
-    }
+    @Autowired
+    BlobProp blobProp;
 
     public void writeToFile(String wordToPrint,String path) {
         tempfile = new File(path);
@@ -49,43 +50,27 @@ public class MyBlob {
         }
     }
 
+    @PostConstruct
     public void init()
     {
-        Properties prop=new Properties();
-        InputStream inputProp = WebController.class.getClassLoader().getResourceAsStream("azureBlob.properties");
         try {
-            prop.load(inputProp);
-            storageConnectionString=prop.getProperty("storageConnectionString");
-            filePath=prop.getProperty("filePath");
-            if(emulator)
-                {
-                    storageConnectionString=prop.getProperty("emulatorstorageConnectionString");
-                    storageAccount = CloudStorageAccount.parse(storageConnectionString);
-                }
-            else
-                {
-                    storageConnectionString=prop.getProperty("storageConnectionString");
-                    storageAccount = CloudStorageAccount.parse(storageConnectionString);
-                }
+            storageAccount = CloudStorageAccount.parse(blobProp.getStorageConnectionString());
             blobClient = storageAccount.createCloudBlobClient();
-            container = blobClient.getContainerReference(containerName);
+            container = blobClient.getContainerReference(blobProp.getContainerName());
             System.out.println("Creating container: " + container.getName());
             container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
-            //tempfile = this.createFile("AppendBlob.txt");
-            //CloudAppendBlob blob = container.getAppendBlobReference(tempfile.getName());
-            //blob.uploadFromFile(tempfile.getAbsolutePath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (StorageException e) {
             e.printStackTrace();
-        } catch (java.security.InvalidKeyException |java.io.IOException e) {
+        } catch (java.security.InvalidKeyException e) {
             e.printStackTrace();
         }
     }
 
     void writeStuffToBlob(String upLoadString) {
         try {
-            CloudAppendBlob blob = container.getAppendBlobReference(blobFileName);
+            CloudAppendBlob blob = container.getAppendBlobReference( blobProp.getBlobFileName());
             OperationContext operationContext = new OperationContext();
             operationContext.setLoggingEnabled(true);
             //System.out.println( sdf.format(cal.getTime()) );
@@ -103,7 +88,7 @@ public class MyBlob {
     public String DownloadFromBlob()
     {   OutputStream outputStream = new ByteArrayOutputStream();
         try {
-            CloudAppendBlob blob = container.getAppendBlobReference(blobFileName);
+            CloudAppendBlob blob = container.getAppendBlobReference(blobProp.getBlobFileName());
             blob.download(outputStream);
         }catch (URISyntaxException |com.microsoft.azure.storage.StorageException e)
         {
@@ -133,4 +118,7 @@ public class MyBlob {
         }
 
     }
+
+
+
 }

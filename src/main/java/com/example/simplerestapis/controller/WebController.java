@@ -1,5 +1,6 @@
 package com.example.simplerestapis.controller;
 import com.example.simplerestapis.models.*;
+import com.example.simplerestapis.service.RestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +15,11 @@ public class WebController {
 	@RequestMapping(value = "/test", method = RequestMethod.POST)														//mapping /test
 	public PostResponse Test(@RequestBody PostRequest inputPayload) 
 	{
-		return restService.ResponseTest(inputPayload);
+		return restService.responseTest(inputPayload);
 	}
 
 	@RequestMapping(value = "/iotdata/{id}", method = RequestMethod.GET)
-	public String GetIotData(@PathVariable("id") String id) 
+	public String GetIotData(@PathVariable("id") String id)
 	{	
 		return restService.queryId(id);
 	}
