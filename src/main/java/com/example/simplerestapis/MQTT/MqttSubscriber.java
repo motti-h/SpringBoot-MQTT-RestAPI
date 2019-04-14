@@ -1,14 +1,17 @@
 package com.example.simplerestapis.MQTT;
 
+import com.example.simplerestapis.models.MyMqttMessageFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonSyntaxException;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 
 // FIXED:
 // FIXME: Subscriber is a poor name for a class since it's not very descriptive - try right click on the name, rename, and rename to MqttSubscriber
@@ -20,18 +23,20 @@ import java.util.Calendar;
 public class MqttSubscriber implements MqttCallback {
 
     private final int qos = 1;                  //mqtt "quality of service" massage
-
     private MqttClient client;
     private static Integer instance = 0;        //class instance counter
     private Integer id;                         //class instance id
     @Autowired
     private SubscriberProp subscriberProp;
     @Autowired
-    public MyBlob myBlob;                       //class myBlob containment for blob communication
+    public AzureBlobAccessor myBlob;                       //class myBlob containment for blob communication
+    @Autowired
+    MqttBroker mqttBroker;
 
     @PostConstruct
     private void init()throws MqttException
     {
+
         instance = instance +1;
         id= instance;
         String clientId = subscriberProp.getClientId() + instance;
@@ -64,6 +69,7 @@ public class MqttSubscriber implements MqttCallback {
     }
 
     public void sendMessage(String topic, String payload) throws MqttException {
+
         MqttMessage message = new MqttMessage(payload.getBytes());
         message.setQos(qos);
         this.client.publish(topic, message); // Blocking publish
@@ -88,15 +94,36 @@ public class MqttSubscriber implements MqttCallback {
      */
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
 
-        String msg = new String(message.getPayload());
-        //byte[] barr = msg.getBytes();
-        //System.out.println(String.format("[%s] %d", topic, ByteBuffer.wrap(barr).getInt()));
-        //System.out.println(id);
-        System.out.println(String.format("[%s] %s", topic, msg));
+
+
+        MyMqttMessageFormat mqttMessageObject = new MyMqttMessageFormat();
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            mqttMessageObject = mapper.readValue(message.toString(), MyMqttMessageFormat.class);
+
+        }catch (JsonSyntaxException |java.io.IOException  e)
+        {
+            e.printStackTrace();
+        }
+
+
+        System.out.println(String.format("topic: %s clientId: %s message: %s", topic, mqttMessageObject.getClientId(),mqttMessageObject.getMessage()));
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//+ " " +sdf.format(cal.getTime())
-        msg = msg + " " +sdf.format(cal.getTime());
-           myBlob.writeStuffToBlob("topic:" + " " + topic + " " + "message:" + " " + msg);
+        mqttMessageObject.setTimeStamp(sdf.format(cal.getTime()));
+        mqttMessageObject.setTopic(topic);
+        String jsonMessage;
+        try {
+            jsonMessage = mapper.writeValueAsString(mqttMessageObject);
+            myBlob.writeStuffToBlob(jsonMessage);
+        }catch (com.fasterxml.jackson.core.JsonProcessingException e)
+        {
+            e.printStackTrace();
+        }
+        //msg = msg + ",\"date\":\"" +sdf.format(cal.getTime())+"\"}";
+           //myBlob.writeStuffToBlob("topic:" + " " + topic + " " + "message:" + " " + msg);
+
 
     }
 

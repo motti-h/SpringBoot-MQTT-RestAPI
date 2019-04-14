@@ -1,22 +1,19 @@
 package com.example.simplerestapis.service;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import com.example.simplerestapis.MQTT.MqttSubscriber;
-import com.example.simplerestapis.service.RestServiceProp;
+import com.example.simplerestapis.models.FileNameModel;
+import com.example.simplerestapis.models.MyMqttMessageFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.simplerestapis.models.PostRequest;
-import com.example.simplerestapis.models.PostResponse;
+
 
 @Service
 public class RestService {
 
-	@Autowired
-	RestServiceProp restServiceProp;
+	//@Autowired
+	//RestServiceProp restServiceProp;
 
 	@Autowired
 	DeviceRepository deviceRepository;
@@ -33,7 +30,7 @@ public class RestService {
 	@PostConstruct
 	public void init() throws java.io.IOException
 	{
-		Runtime.getRuntime().exec(restServiceProp.getMosquittoExecutable(), null, new File(restServiceProp.getMosquittoExecutableFilePath()));
+		//Runtime.getRuntime().exec(restServiceProp.getMosquittoExecutable(), null, new File(restServiceProp.getMosquittoExecutableFilePath()));
 		/*try {
 			// FIXED
 			// FIXME: LoadProperties includes hard-coded paths, and you don't use anything from application.properties here.
@@ -73,16 +70,34 @@ public class RestService {
 		return deviceRepository.quaryInfoByIdAndDate(id,date);
 	}
 	
-	public PostResponse responseTest(PostRequest inputPayload) 
+	public MyMqttMessageFormat responseTest(MyMqttMessageFormat inputPayload)
 	{
-		PostResponse response = new PostResponse();
-		response.setMessage("server received message: " + inputPayload.getMessage());
-		response.setTopic("server received topic: " + inputPayload.getTopic());
-		response.setDeviceId(inputPayload.getDeviceId());
-		String payload = inputPayload.getDeviceId() + " " + inputPayload.getMessage();
-		String topic = inputPayload.getTopic();
-		deviceRepository.sendMqttMessage(topic,payload);
+		MyMqttMessageFormat response = new MyMqttMessageFormat();
+
+		//String payload = inputPayload.getClientId() + " " + inputPayload.getMessage();
+		//String topic = inputPayload.getTopic();
+		MyMqttMessageFormat mqttMessageObject = new MyMqttMessageFormat();
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonMessage;
+		try {
+			jsonMessage = mapper.writeValueAsString(inputPayload);
+			deviceRepository.sendMqttMessage(inputPayload.getTopic(),jsonMessage);
+
+		}catch (com.fasterxml.jackson.core.JsonProcessingException e)
+		{
+			e.printStackTrace();
+		}
+
+
+		response.setMessage(inputPayload.getMessage());
+		response.setTopic(inputPayload.getTopic());
+		response.setClientId(inputPayload.getClientId());
 		return response;	
+	}
+
+	public String createAppendBlob(String fileName)
+	{
+		return deviceRepository.createAppendBlob(fileName);
 	}
 
 	

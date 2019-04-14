@@ -1,9 +1,9 @@
 package com.example.simplerestapis.service;
 
 import com.example.simplerestapis.MQTT.MqttSubscriber;
+import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +36,9 @@ public class DeviceRepository {
 
     public String quaryInfoByIdAndDate(String id, String date)
     {
+        JsonParser jsonParser = new JsonParser();
+        jsonParser.parse(mqttsubscriber.myBlob.DownloadFromBlob());
+        //JsonReader reader = new JsonReader(mqttsubscriber.myBlob.DownloadFromBlob());
         String textdata = mqttsubscriber.myBlob.DownloadFromBlob();
         String lines[] = textdata.split("\\r?\\n");
         List<String> list = new ArrayList<String>();
@@ -61,5 +64,11 @@ public class DeviceRepository {
         {
             e.printStackTrace();
         }
+    }
+
+    public String createAppendBlob(String fileName)
+    {
+
+       return mqttsubscriber.myBlob.createAppendBlob(fileName);
     }
 }
