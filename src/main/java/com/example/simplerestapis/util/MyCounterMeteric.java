@@ -2,24 +2,36 @@ package com.example.simplerestapis.util;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class MyCounterMeteric {
 
-    private final Counter restCallsCounter;
-    private final Counter mqttMessageCounter;
-    public MyCounterMeteric(MeterRegistry registry) {
-        this.restCallsCounter = registry.counter("services.rest.counter");
-        this.mqttMessageCounter = registry.counter("services.mqtt.counter");
-    }
 
+    Map<String,Counter> counterMap = new HashMap<>();
+    @Autowired
+    MeterRegistry registry;
 
-    public void countMqttMessage() {
-        mqttMessageCounter.increment();
-    }
-    public void countRestCall()
+    private void registerNewCounter(String counterName)
     {
-        restCallsCounter.increment();
+        counterMap.put(counterName,registry.counter(counterName));
     }
+
+    public void inctementCounter(String counterName)
+    {
+        if(counterMap.containsKey(counterName))
+        {
+            counterMap.get(counterName).increment();
+        }
+        else
+        {
+            registerNewCounter(counterName);
+        }
+    }
+
+
 }

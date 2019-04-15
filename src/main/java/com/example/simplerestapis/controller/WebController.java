@@ -19,14 +19,14 @@ public class WebController {
 	@RequestMapping(value = "/test", method = RequestMethod.POST)														//mapping /test
 	public MyMqttMessageFormat Test(@RequestBody MyMqttMessageFormat inputPayload)
 	{
-		myCounterMeteric.countRestCall();
+		myCounterMeteric.inctementCounter("restcalls");
 		return restService.responseTest(inputPayload);
 	}
 
 	@RequestMapping(value = "/iotdata/{id}", method = RequestMethod.GET)
 	public String GetIotData(@PathVariable("id") String id)
 	{
-		myCounterMeteric.countRestCall();
+        myCounterMeteric.inctementCounter("restcalls");
 		return restService.queryId(id);
 	}
 
@@ -34,13 +34,13 @@ public class WebController {
 	@RequestMapping(value = "/iotdata/{id}/{date}", method = RequestMethod.GET)
 	public String GetIotDataWithDate(@PathVariable("id") String id,@PathVariable("date") String date) 
 	{
-		myCounterMeteric.countRestCall();
+        myCounterMeteric.inctementCounter("restcalls");
 		return restService.queryIdDate(id,date);
 	}
 	@RequestMapping(value = "/createblob", method = RequestMethod.POST)														//mapping /test
 	public String createblob(@RequestBody FileNameModel fileName)
 	{
-		myCounterMeteric.countRestCall();
+        myCounterMeteric.inctementCounter("restcalls");
 		return restService.createAppendBlob(fileName.getFileName());
 	}
 

@@ -97,7 +97,7 @@ public class MqttSubscriber implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
 
 
-        myCounterMeteric.countMqttMessage();
+
         MyMqttMessageFormat mqttMessageObject = new MyMqttMessageFormat();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -109,7 +109,7 @@ public class MqttSubscriber implements MqttCallback {
             e.printStackTrace();
         }
 
-
+        myCounterMeteric.inctementCounter(mqttMessageObject.getClientId());
         System.out.println(String.format("topic: %s clientId: %s message: %s", topic, mqttMessageObject.getClientId(),mqttMessageObject.getMessage()));
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//+ " " +sdf.format(cal.getTime())
