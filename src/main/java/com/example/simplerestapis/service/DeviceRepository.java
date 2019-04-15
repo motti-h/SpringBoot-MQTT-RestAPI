@@ -38,7 +38,6 @@ public class DeviceRepository {
     {
         JsonParser jsonParser = new JsonParser();
         jsonParser.parse(mqttsubscriber.myBlob.DownloadFromBlob());
-        //JsonReader reader = new JsonReader(mqttsubscriber.myBlob.DownloadFromBlob());
         String textdata = mqttsubscriber.myBlob.DownloadFromBlob();
         String lines[] = textdata.split("\\r?\\n");
         List<String> list = new ArrayList<String>();
@@ -68,7 +67,6 @@ public class DeviceRepository {
 
     public String createAppendBlob(String fileName)
     {
-
        return mqttsubscriber.myBlob.createAppendBlob(fileName);
     }
 }

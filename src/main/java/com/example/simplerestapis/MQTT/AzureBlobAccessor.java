@@ -14,32 +14,13 @@ import java.net.URISyntaxException;
 @Component
 public class AzureBlobAccessor implements BlobAccessor {
 
-    public File tempfile = null;
+
     CloudStorageAccount storageAccount;
     CloudBlobClient blobClient;
     CloudBlobContainer container;
     @Autowired
     BlobProp blobProp;
 
-    public void writeToFile(String wordToPrint,String path) {
-        tempfile = new File(path);
-
-        //Create the file
-        try {
-            if (tempfile.createNewFile()) {
-                System.out.println("File is created!");
-            } else {
-                System.out.println("File already exists.");
-            }
-
-            //Write Content
-            FileWriter writer = new FileWriter(tempfile);
-            writer.write(wordToPrint);
-            writer.close();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
     public void createContainerOnCloud(String containerName)throws java.net.URISyntaxException, com.microsoft.azure.storage.StorageException
     {
             container = blobClient.getContainerReference(containerName);
@@ -54,7 +35,7 @@ public class AzureBlobAccessor implements BlobAccessor {
         try {
             storageAccount = CloudStorageAccount.parse(blobProp.getStorageConnectionString());
             blobClient = storageAccount.createCloudBlobClient();
-            createContainerOnCloud(blobProp.getContainerName());
+            this.createContainerOnCloud(blobProp.getContainerName());
         } catch (URISyntaxException |java.security.InvalidKeyException | com.microsoft.azure.storage.StorageException e) {
             System.out.println("unable to connect to cloud container error:" + e);
             e.printStackTrace();
@@ -103,27 +84,6 @@ public class AzureBlobAccessor implements BlobAccessor {
     }
 
 
-    File createFile(String fileName){
-        File t = new File(fileName);
-
-        //Create the file
-        try {
-            if (t.createNewFile()) {
-                System.out.println("File is created!");
-            } else {
-                System.out.println("File already exists.");
-            }
-
-            //Write Content
-
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            return t;
-        }
-
-    }
 
 
 
