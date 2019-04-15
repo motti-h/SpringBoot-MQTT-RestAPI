@@ -73,10 +73,6 @@ public class RestService {
 	public MyMqttMessageFormat responseTest(MyMqttMessageFormat inputPayload)
 	{
 		MyMqttMessageFormat response = new MyMqttMessageFormat();
-
-		//String payload = inputPayload.getClientId() + " " + inputPayload.getMessage();
-		//String topic = inputPayload.getTopic();
-		MyMqttMessageFormat mqttMessageObject = new MyMqttMessageFormat();
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonMessage;
 		try {

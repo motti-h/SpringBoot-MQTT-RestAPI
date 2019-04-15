@@ -1,9 +1,9 @@
 package com.example.simplerestapis.MQTT;
 
 import com.example.simplerestapis.interfaces.BlobAccessor;
+import com.example.simplerestapis.properties.BlobProp;
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,7 @@
-package com.example.simplerestapis.MQTT;
+package com.example.simplerestapis.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 

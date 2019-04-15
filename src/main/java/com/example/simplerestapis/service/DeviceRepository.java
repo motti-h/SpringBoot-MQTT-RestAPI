@@ -15,15 +15,13 @@ public class DeviceRepository {
     public String quaryInfoById(String id)
     {
 
-        String textdata = mqttsubscriber.myBlob.DownloadFromBlob();
-        String lines[] = textdata.split("\\r?\\n");
+        String lines[]=this.splitBlobToLines(mqttsubscriber.myBlob.DownloadFromBlob());
         List<String> list = new ArrayList<String>();
 
         // FIXED: for-each
         // FIXME: For the logic below, for-each loop would result in a shorter and more readable code
         //FIXED:
         //FIXME: indexOf(id) can have all kinds of odd behavior since it's not specifically looking where id is located, but at the whole line.
-
         for(String line:lines)
         {
             if(line.contains(id))
@@ -36,12 +34,8 @@ public class DeviceRepository {
 
     public String quaryInfoByIdAndDate(String id, String date)
     {
-        JsonParser jsonParser = new JsonParser();
-        jsonParser.parse(mqttsubscriber.myBlob.DownloadFromBlob());
-        String textdata = mqttsubscriber.myBlob.DownloadFromBlob();
-        String lines[] = textdata.split("\\r?\\n");
+        String lines[]=this.splitBlobToLines(mqttsubscriber.myBlob.DownloadFromBlob());
         List<String> list = new ArrayList<String>();
-
         //FIXED: for-each
         for(String line:lines)
         {
@@ -68,5 +62,10 @@ public class DeviceRepository {
     public String createAppendBlob(String fileName)
     {
        return mqttsubscriber.myBlob.createAppendBlob(fileName);
+    }
+
+    private String[] splitBlobToLines(String jsonText)
+    {
+        return jsonText.split("\\r?\\n");
     }
 }

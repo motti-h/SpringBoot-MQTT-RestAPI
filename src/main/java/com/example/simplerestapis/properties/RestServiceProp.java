@@ -1,4 +1,4 @@
-package com.example.simplerestapis.service;
+package com.example.simplerestapis.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

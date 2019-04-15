@@ -1,6 +1,8 @@
 package com.example.simplerestapis.MQTT;
 
 import com.example.simplerestapis.models.MyMqttMessageFormat;
+import com.example.simplerestapis.properties.SubscriberProp;
+import com.example.simplerestapis.util.MyCounterMeteric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 import org.eclipse.paho.client.mqttv3.*;
@@ -32,11 +34,11 @@ public class MqttSubscriber implements MqttCallback {
     public AzureBlobAccessor myBlob;                       //class myBlob containment for blob communication
     @Autowired
     MqttBroker mqttBroker;
-
+    @Autowired
+    MyCounterMeteric myCounterMeteric;
     @PostConstruct
     private void init()throws MqttException
     {
-
         instance = instance +1;
         id= instance;
         String clientId = subscriberProp.getClientId() + instance;
@@ -95,7 +97,7 @@ public class MqttSubscriber implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
 
 
-
+        myCounterMeteric.countMqttMessage();
         MyMqttMessageFormat mqttMessageObject = new MyMqttMessageFormat();
         ObjectMapper mapper = new ObjectMapper();
 
